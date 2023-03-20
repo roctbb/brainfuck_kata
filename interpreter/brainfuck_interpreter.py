@@ -175,37 +175,25 @@ class BrainfuckInterpreter:
             self._code_pointer = self._find_left_paired_bracket() + 1
 
     def _find_right_paired_bracket(self):
-        level = 0
-        position = self._code_pointer + 1
-
-        while position < len(self._program):
-            literal_type = self._get_literal_type_for_position(position)
-
-            if literal_type == LiteralTypes.START_LOOP:
-                level += 1
-
-            if literal_type == LiteralTypes.END_LOOP:
-                if level == 0:
-                    return position
-                else:
-                    level -= 1
-
-            position += 1
+        return self._find_bracket(LiteralTypes.START_LOOP, LiteralTypes.END_LOOP, -1)
 
     def _find_left_paired_bracket(self):
+        return self._find_bracket(LiteralTypes.END_LOOP, LiteralTypes.START_LOOP, -1)
+
+    def _find_bracket(self, left, right, step):
         level = 0
-        position = self._code_pointer - 1
+        position = self._code_pointer + step
 
         while position < len(self._program):
             literal_type = self._get_literal_type_for_position(position)
 
-            if literal_type == LiteralTypes.END_LOOP:
+            if literal_type == left:
                 level += 1
 
-            if literal_type == LiteralTypes.START_LOOP:
+            if literal_type == right:
                 if level == 0:
                     return position
                 else:
                     level -= 1
 
-            position -= 1
+            position += step
